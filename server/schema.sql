@@ -6,25 +6,29 @@ USE chat;
 CREATE TABLE messages (
   /* Describe your table here.*/
   id int(11) NOT NULL auto_increment PRIMARY KEY,
-  username char(50), 
+  user_id int(11),
+  room_id int(11),
   text varchar(140), 
-  roomname varchar(50),
   createdAt datetime DEFAULT CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE users (
   id int(11) NOT NULL auto_increment PRIMARY KEY,
-  username char(50)
+  username char(50) UNIQUE KEY
 );
 
-/* FIXTURE
+CREATE TABLE rooms (
+  id int(11) NOT NULL auto_increment PRIMARY KEY,
+  roomname char(50) UNIQUE KEY
+);
+
+/* FIXTURE */
 INSERT INTO users (username) VALUES ('Darryl');
 INSERT INTO users (username) VALUES ('Payton');
-/* Create other tables and define schemas for them here! */
-
-
-
+INSERT INTO rooms (roomname) VALUES ('Lobby');
+INSERT INTO rooms (roomname) VALUES ('General');
+INSERT INTO messages (user_id, room_id, text) VALUES (2, 1, 'First message.. yay');
+INSERT INTO messages (user_id, room_id, text) VALUES (1, 1, 'Second message.');
 
 /*  Execute this file from the command line by typing:
  *    mysql -u root < server/schema.sql
