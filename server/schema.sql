@@ -15,6 +15,7 @@ CREATE TABLE messages (
 CREATE TABLE users (
   id int(11) NOT NULL auto_increment PRIMARY KEY,
   username char(50) UNIQUE KEY
+  password char(50) 
 );
 
 CREATE TABLE rooms (
