@@ -22,7 +22,7 @@ app.use(parser.json());
 // app.use("", router);
 
 // Serve the client files
-app.use('/', express.static(__dirname + "/../client"));
+app.use('/', express.static(__dirname + "/../client/client"));
 
 app.use("/classes", router);
 

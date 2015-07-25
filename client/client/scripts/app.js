@@ -4,16 +4,17 @@ window.data = {};
 var app = {};
 
 app.username = '';
+app.host = 'http://127.0.0.1:3000'
 
 app.init = function() {
-  var rooms = app.findRooms(window.data.results);
-  app.printRooms(rooms);
+  // var rooms = app.findRooms(window.data.results); //testing
+  // app.printRooms(rooms);
 };
 
 app.send = function(postPackage) { // message = {username, text, roomname}
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: app.host + '/classes/messages',
     type: 'POST',
     data: JSON.stringify(postPackage),
     contentType: 'application/json', //what does this mean?
@@ -30,7 +31,7 @@ app.send = function(postPackage) { // message = {username, text, roomname}
 
 app.fetch = function() {
   $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: app.host + '/classes/messages',
     type: 'GET',
     success: function(data) {
       app.displayPosts(data);
@@ -98,7 +99,7 @@ app.findRooms = function(messageArray) { //should accept results array from wind
 //************** Initialize app
 $(document).ready(function(){
   // app.login();
-  // setInterval(app.fetch, 1000); //display messages
+  setInterval(app.fetch, 1000); //display messages
   app.fetch(); //fetch stuff for the first time
   setTimeout(function() { //wait for the fetch to return data, then update room dropdown
     app.init();
@@ -110,7 +111,8 @@ $(document).ready(function(){
 //func: print posts to the page
 app.displayPosts = function(data, roomname) {
   $('#messages').html('');
-  var results = data.results;
+  // var results = data.results;
+  var results = data;
 
 
   for (var i = 0; i < results.length; i++) {
@@ -136,36 +138,37 @@ app.displayPosts = function(data, roomname) {
 
 //write message
 $(document).on('click', '#submitMessage', function() {
-  var input = $('#inputMessage').val();
-  console.log('input message:', input);
-  var message = {};
-  message['username'] = app.username === '' ? "Guest" : app.username;
-  message['text'] = input;
-  message['roomname'] = window.chatRoom;
+  var message = $('#inputMessage').val();
+  var username = $('#inputUsername').val();
+  var roomname = $('#inputRoomname').val();
+  var postData = {};
+  postData['username'] = username;
+  postData['message'] = message;
+  postData['roomname'] = roomname;
 
-  if (message === '') {
+  if (postData === '') {
     alert('Message is empty, please try again');
     return;
   } else {
-    app.send(message);
+    app.send(postData);
     $('#inputMessage').val('');
   }
 });
 
-//func: create a new room
-$(document).on('click', '#submitRoom', function() {
-  var input = $('#inputRoom').val();
-  $('#inputRoom').val('');
-  window.chatRoom = input; 
+//func: create a new room test
+// $(document).on('click', '#submitRoom', function() {
+//   var input = $('#inputRoom').val();
+//   $('#inputRoom').val('');
+//   window.chatRoom = input; 
 
-  var message = {};
-  message['username'] = "WelcomeBot";
-  message['text'] = "Welcome to "+window.chatRoom;
-  message['roomname'] = window.chatRoom;
-  app.send(message);
-  setTimeout(app.init, 1000);
+//   var message = {};
+//   message['username'] = "WelcomeBot";
+//   message['message'] = "Welcome to "+window.chatRoom;
+//   message['roomname'] = window.chatRoom;
+//   app.send(message);
+//   setTimeout(app.init, 1000);
 
-});
+// });
 
 
 // func: Befriend user
