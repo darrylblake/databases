@@ -58,31 +58,37 @@ describe("Persistent Node Chat Server", function() {
           expect(results[0].text).to.equal("In mercy's name, three days is all I need.");
 
           done();
-        });
-      });
-    });
-  });
+        }); //db.query
+      }); //request
+    }); //request
+  }); //it
 
   it("Should output all messages from the DB", function(done) {
     // Let's insert a message into the db
-       var queryString = "INSERT INTO messages SET ?";
-       // var queryArgs = [{username: 'Test'}];
-       var queryArgs = [{username: 'Test', 'text': 'Men like you can never change!', 'roomname': 'main'}];
-    // TODO - The exact query string and query args to use
-    // here depend on the schema you design, so I'll leave
-    // them up to you. */
+       // var queryString = "INSERT INTO users SET ?";
+       // var queryArgs = [{username: 'Test', 'text': 'Men like you can never change!', 'roomname': 'main'}];
+       // var queryArgs = [{username: 'Test', 'text': 'Men like you can never change!', 'roomname': 'main'}];
 
-    dbConnection.query(queryString, queryArgs, function(err) {
-      if (err) { throw err; }
+    var username = 'Bobby';
+    var roomname = 'Hell';
+    var message = 'It is hot here.';
 
-      // Now query the Node chat server and see if it returns
-      // the message we just inserted:
-      request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
-        var messageLog = JSON.parse(body);
-        expect(messageLog[0].text).to.equal("Men like you can never change!");
-        expect(messageLog[0].roomname).to.equal("main");
-        done();
+    var queryUsers = "INSERT INTO users (username) VALUES ('"+username+"');";
+    var queryRooms = "INSERT INTO rooms (roomname) VALUES ('"+roomname+"');";
+    var queryMessages = "INSERT INTO messages (user_id, room_id, text) VALUES ( ( SELECT id FROM users WHERE username='"+username+"' ), ( SELECT id FROM rooms WHERE roomname='"+roomname+"' ),'"+ message +"');"
+
+    dbConnection.query(queryUsers, function(err, data){
+      dbConnection.query(queryRooms, function(err, data) {
+        dbConnection.query(queryMessages, function(err, data) {
+          request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
+            var messageLog = JSON.parse(body);
+            expect(messageLog[0].text).to.equal("It is hot here.");
+            expect(messageLog[0].roomname).to.equal("Hell");
+            done();
+          });
+        });
       });
-    });
-  });
-});
+      //console.log('Inside of messages POST. Data = ', data);
+    }); //db.query   
+  }); //it
+}); //describe
