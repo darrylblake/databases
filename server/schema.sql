@@ -9,8 +9,6 @@ CREATE TABLE messages (
   user_id int(11),
   room_id int(11),
   text varchar(140), 
-  username varchar(140), 
-  roomname varchar(140), 
   createdAt datetime DEFAULT CURRENT_TIMESTAMP
 );
 
